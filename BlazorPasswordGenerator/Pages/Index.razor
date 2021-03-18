@@ -1,0 +1,26 @@
+﻿@page "/"
+
+<h3>Here: @Message</h3>
+<input @bind-value ="Length"/>
+<button @onclick=@ShowMessage>Click</button>
+
+@code{
+    public string Message { get; set; } = "";
+    public int Length { get; set; }
+    private readonly Random _random = new Random();
+    const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|,><.;?/\"";
+
+    void ShowMessage()
+    {
+        string initStr = "";
+        for(int i = 0; i < Length; i++)
+        {
+            initStr += chars[_random.Next(chars.Length)];
+        }
+        Message = initStr;
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+}
