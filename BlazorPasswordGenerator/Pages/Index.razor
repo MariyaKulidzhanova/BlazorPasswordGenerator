@@ -1,19 +1,24 @@
 ﻿@page "/"
+@inject ClipboardService ClipboardService
 
-<h3>Here: @Message</h3>
-<input @bind-value ="Length"/>
-<button @onclick=@ShowMessage>Click</button>
-
+<h3>Password: @Message</h3>
+<label>Enter password's length: </label>
+<input @bind-value="Length" />
+<hr />
+<button @onclick=@Generate>Generate password</button>
+<button @onclick=@CopyToClipboard>@CopyBtnTxt</button>
 @code{
     public string Message { get; set; } = "";
+    public string CopyBtnTxt { get; set; } = "Copy";
     public int Length { get; set; }
     private readonly Random _random = new Random();
     const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|,><.;?/\"";
 
-    void ShowMessage()
+    void Generate()
     {
         string initStr = "";
-        for(int i = 0; i < Length; i++)
+        CopyBtnTxt = "Copy";
+        for (int i = 0; i < Length; i++)
         {
             initStr += chars[_random.Next(chars.Length)];
         }
@@ -22,5 +27,19 @@
         {
             StateHasChanged();
         });
+    }
+
+    async Task CopyToClipboard()
+    {
+        // Writing to the clipboard may be denied, so you must handle the exception
+        try
+        {
+            CopyBtnTxt = "Copied";
+            await ClipboardService.WriteTextAsync(Message);
+        }
+        catch
+        {
+            Console.WriteLine("Cannot write text to clipboard");
+        }
     }
 }
