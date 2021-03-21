@@ -1,9 +1,31 @@
 ﻿@page "/"
 @inject ClipboardService ClipboardService
 
-<h3>Password: @Message</h3>
+<div>
+    <h3>Password: @Message</h3>
+    <button @onclick=@Generate><img src="/refresh.png" width="20" height="20" /></button>
+</div>
+
 <label>Enter password's length: </label>
 <input @bind-value="Length" />
+
+<div>
+    <input type="checkbox" id="lowercase" name="lowercase"  @bind="@lowercase" >
+    <label for="lowercase">Include lowercase characters</label>
+</div>
+<div>
+    <input type="checkbox" id="uppercase" name="uppsercase" @bind="@uppercase">
+    <label for="uppercase">Include uppercase characters</label>
+</div>
+<div>
+    <input type="checkbox" id="numeric" name="numeric" @bind="@numeric">
+    <label for="numeric">Include numbers</label>
+</div>
+<div>
+    <input type="checkbox" id="symbolic" name="symbolic" @bind="@symbolic">
+    <label for="symbolic">Include special symbols</label>
+</div>
+
 <hr />
 <button @onclick=@Generate>Generate password</button>
 <button @onclick=@CopyToClipboard>@CopyBtnTxt</button>
@@ -12,21 +34,36 @@
     public string CopyBtnTxt { get; set; } = "Copy";
     public int Length { get; set; }
     private readonly Random _random = new Random();
-    const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|,><.;?/\"";
+    private string chars = " ";
+    const string lowerchars = "abcdefghijklmnopqrstuvwxyz";
+    const string upperchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const string numbers = "0123456789";
+    const string symbols = "~`!@#$%^&*()_-+={[}]|,><.;?/\"";
+
+    private bool lowercase { get; set; } = true;
+    private bool uppercase { get; set; } = true;
+    private bool numeric { get; set; }
+    private bool symbolic { get; set; }
 
     void Generate()
     {
+        if (lowercase) chars += lowerchars;
+        if (uppercase) chars += upperchars;
+        if (numeric) chars += numbers;
+        if (symbolic) chars += symbols;
+
         string initStr = "";
         CopyBtnTxt = "Copy";
         for (int i = 0; i < Length; i++)
         {
             initStr += chars[_random.Next(chars.Length)];
         }
-        Message = initStr;
+        Message = String.Concat(initStr.Where(c => !Char.IsWhiteSpace(c))); 
         InvokeAsync(() =>
         {
             StateHasChanged();
         });
+        chars = " ";
     }
 
     async Task CopyToClipboard()
