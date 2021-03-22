@@ -1,26 +1,134 @@
 ﻿@page "/"
+@inject ClipboardService ClipboardService
 
-<h3>Here: @Message</h3>
-<input @bind-value ="Length"/>
-<button @onclick=@ShowMessage>Click</button>
-
-@code{
-    public string Message { get; set; } = "";
-    public int Length { get; set; }
-    private readonly Random _random = new Random();
-    const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|,><.;?/\"";
-
-    void ShowMessage()
-    {
-        string initStr = "";
-        for(int i = 0; i < Length; i++)
-        {
-            initStr += chars[_random.Next(chars.Length)];
-        }
-        Message = initStr;
-        InvokeAsync(() =>
-        {
-            StateHasChanged();
-        });
+<style>
+    .center {
+        margin: auto;
+        width: 50%;
+        padding: 20px;
     }
-}
+    #box1 {
+        padding: 10px;
+        box-shadow: 2px 2px 20px 2px #c3baba;
+    }
+    #box2 {
+        padding: 10px;
+        display:flex;
+        justify-content:center;
+    }
+    .userRound{
+        border-radius:20px;
+    }
+    #numInput {
+        width: 75%;
+        height: 25px;
+        margin-top: 5px;
+        text-align: right;
+        text-indent: 5px;
+        font-size: 12.6pt;
+        border-radius: 5px;
+        border: solid 1.5px #D3D3D3;
+        -webkit-transition: 1s; /* Safari */
+        transition: 1s;
+    }
+    input[type=text]:hover {
+            box-shadow: 0 0 5pt 0.5pt #D3D3D3;
+    }
+    input[type=text]:focus {
+            box-shadow: 0 0 5pt 2pt #D3D3D3;
+            outline-width: 0px;
+    }
+</style>
+
+<div class="center">
+    <div class="box2 mt-4">
+        <h2>Generate a secure password</h2>
+        <h5>Use my online password generator to instantly create secure, random password.</h5>
+    </div>
+    <div id="box1" class="mt-4">
+        <div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <button @onclick=@Generate class="btn btn-outline-danger"><img src="/refresh.png" width="15" height="15" /></button>
+                    <button @onclick=@CopyToClipboard class="btn btn-outline-danger"><img src="/copy.png" width="15" height="15" /></button>
+                </div>
+                <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" @bind-value="@Message">
+            </div>
+        </div>
+
+        <h4>Customize your password: </h4>
+
+        <label>Enter password's length: </label>
+        <input @bind-value="Length" type="text" style="width:30px" id="numInput" />
+
+        <div>
+            <input type="checkbox" id="lowercase" name="lowercase" @bind="@lowercase">
+            <label for="lowercase">Include lowercase characters</label>
+        </div>
+        <div>
+            <input type="checkbox" id="uppercase" name="uppsercase" @bind="@uppercase">
+            <label for="uppercase">Include uppercase characters</label>
+        </div>
+        <div>
+            <input type="checkbox" id="numeric" name="numeric" @bind="@numeric">
+            <label for="numeric">Include numbers</label>
+        </div>
+        <div>
+            <input type="checkbox" id="symbolic" name="symbolic" @bind="@symbolic">
+            <label for="symbolic">Include special symbols</label>
+        </div>
+    </div>
+    <div class="mt-4 box2">
+        <button @onclick=@Generate class="btn btn-danger userRound">Generate password</button>&nbsp;
+    </div>
+</div>
+    @code{
+        public string Message { get; set; } = "";
+        public string CopyBtnTxt { get; set; } = "Copy";
+        public int Length { get; set; }
+        private readonly Random _random = new Random();
+        private string chars = " ";
+        const string lowerchars = "abcdefghijklmnopqrstuvwxyz";
+        const string upperchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string numbers = "0123456789";
+        const string symbols = "~`!@#$%^&*()_-+={[}]|,><.;?/\"";
+
+        private bool lowercase { get; set; } = true;
+        private bool uppercase { get; set; } = true;
+        private bool numeric { get; set; }
+        private bool symbolic { get; set; }
+
+        void Generate()
+        {
+            if (lowercase) chars += lowerchars;
+            if (uppercase) chars += upperchars;
+            if (numeric) chars += numbers;
+            if (symbolic) chars += symbols;
+
+            string initStr = "";
+            CopyBtnTxt = "Copy";
+            for (int i = 0; i < Length; i++)
+            {
+                initStr += chars[_random.Next(chars.Length)];
+            }
+            Message = String.Concat(initStr.Where(c => !Char.IsWhiteSpace(c)));
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+            chars = " ";
+        }
+
+        async Task CopyToClipboard()
+        {
+            try
+            {
+                CopyBtnTxt = "Copied";
+                await ClipboardService.WriteTextAsync(Message);
+            }
+            catch
+            {
+                Console.WriteLine("Cannot write text to clipboard");
+            }
+        }
+    }
