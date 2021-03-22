@@ -7,11 +7,11 @@
         width: 50%;
         padding: 20px;
     }
-    #example1 {
+    #box1 {
         padding: 10px;
         box-shadow: 2px 2px 20px 2px #c3baba;
     }
-    #example2 {
+    #box2 {
         padding: 10px;
         display:flex;
         justify-content:center;
@@ -41,7 +41,11 @@
 </style>
 
 <div class="center">
-    <div id="example1">
+    <div class="box2 mt-4">
+        <h2>Generate a secure password</h2>
+        <h5>Use my online password generator to instantly create secure, random password.</h5>
+    </div>
+    <div id="box1" class="mt-4">
         <div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
@@ -52,8 +56,10 @@
             </div>
         </div>
 
+        <h4>Customize your password: </h4>
+
         <label>Enter password's length: </label>
-        <input @bind-value="Length" type="text" style="width:30px" id="numInput"/>
+        <input @bind-value="Length" type="text" style="width:30px" id="numInput" />
 
         <div>
             <input type="checkbox" id="lowercase" name="lowercase" @bind="@lowercase">
@@ -72,7 +78,7 @@
             <label for="symbolic">Include special symbols</label>
         </div>
     </div>
-    <div id="example2" class="mt-4 ">
+    <div class="mt-4 box2">
         <button @onclick=@Generate class="btn btn-danger userRound">Generate password</button>&nbsp;
     </div>
 </div>
@@ -115,7 +121,6 @@
 
         async Task CopyToClipboard()
         {
-            // Writing to the clipboard may be denied, so you must handle the exception
             try
             {
                 CopyBtnTxt = "Copied";
