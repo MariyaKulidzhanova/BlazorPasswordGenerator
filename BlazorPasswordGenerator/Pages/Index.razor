@@ -34,7 +34,6 @@
     input[type=text]:hover {
             box-shadow: 0 0 5pt 0.5pt #D3D3D3;
     }
-
     input[type=text]:focus {
             box-shadow: 0 0 5pt 2pt #D3D3D3;
             outline-width: 0px;
@@ -44,8 +43,13 @@
 <div class="center">
     <div id="example1">
         <div>
-            <h3>Password: @Message</h3>
-            <button @onclick=@Generate class="btn btn-outline-danger"><img src="/refresh.png" width="15" height="15" /></button>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <button @onclick=@Generate class="btn btn-outline-danger"><img src="/refresh.png" width="15" height="15" /></button>
+                    <button @onclick=@CopyToClipboard class="btn btn-outline-danger"><img src="/copy.png" width="15" height="15" /></button>
+                </div>
+                <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" @bind-value="@Message">
+            </div>
         </div>
 
         <label>Enter password's length: </label>
@@ -70,7 +74,6 @@
     </div>
     <div id="example2" class="mt-4 ">
         <button @onclick=@Generate class="btn btn-danger userRound">Generate password</button>&nbsp;
-        <button @onclick=@CopyToClipboard class="btn btn-danger userRound">@CopyBtnTxt</button>
     </div>
 </div>
     @code{
